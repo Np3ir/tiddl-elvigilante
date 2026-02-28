@@ -1,3 +1,9 @@
+### Warning
+
+This app is for personal, educational, and archival purposes only. It is not affiliated with Tidal. Users must ensure their use complies with Tidal's terms of service and all applicable local copyright laws. Downloaded content is for personal use and may not be shared or redistributed. The developer assumes no responsibility for misuse of this app.
+
+---
+
 # tiddl-elvigilante
 
 This is a custom and enhanced fork of the popular Tidal downloader, **tiddl**. This repository is based on the original [oskvr37/tiddl](https://github.com/oskvr37/tiddl) project and introduces the following key improvements.
@@ -33,7 +39,7 @@ pip install tiddl
     ```
     **Examples:**
     ```bash
-    tiddl download url https://tidal.com/browse/album/103805723
+    tiddl download url https://github.com/oskvr37/tiddl/issues/11
     tiddl download url track/103805726
     tiddl download url artist/4311528
     ```
