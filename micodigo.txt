@@ -1,0 +1,196 @@
+1️⃣ Mejoras generales (aplican a ambos)
+🔹 1. Separación clara de responsabilidades (bien, pero se puede afinar)
+
+Vas por buen camino:
+
+strings.py → normalización / limpieza
+
+format.py → formateo / presentación
+
+Mejoraría:
+
+Que strings.py nunca decida cómo se ve algo (paréntesis, mayúsculas finales, etc.)
+
+Que format.py no limpie texto crudo, solo consuma strings ya normalizados
+
+👉 Regla de oro:
+
+strings.py transforma datos → format.py los presenta
+
+🔹 2. Tipado (typing) — muy recomendado
+
+No es obligatorio, pero aquí sí aporta claridad.
+
+Ejemplo:
+
+def normalize_artist(name: str) -> str:
+    ...
+
+
+y si devuelves opcionales:
+
+from typing import Optional
+
+def extract_feat(text: str) -> Optional[str]:
+    ...
+
+
+Esto te ahorra bugs silenciosos.
+
+2️⃣ Mejoras específicas en strings.py
+🔧 1. Centralizar regex
+
+Ahora mismo tienes muchos regex sueltos. Funciona, pero es difícil de mantener.
+
+Mejor patrón:
+
+FEAT_PATTERNS = [
+    r"\(feat\.?\s+(.+?)\)",
+    r"\(ft\.?\s+(.+?)\)",
+    ...
+]
+
+
+Y luego:
+
+for pattern in FEAT_PATTERNS:
+    match = re.search(pattern, text, flags=re.I)
+
+
+✅ Ventajas:
+
+Más legible
+
+Más fácil añadir idiomas
+
+Menos duplicación
+
+🔧 2. Normalización Unicode (MUY importante en tu caso)
+
+Tú trabajas con:
+
+Japonés
+
+Coreano
+
+Chino
+
+Unicode raro (ꉈꀧ꒒…)
+
+Mejora clave:
+
+import unicodedata
+
+def normalize_unicode(text: str) -> str:
+    return unicodedata.normalize("NFKC", text)
+
+
+Y usarla al inicio de cualquier limpieza.
+
+Esto evita:
+
+Duplicados invisibles
+
+Comparaciones fallidas
+
+Bugs con nombres iguales pero distintos bytes
+
+🔧 3. Evitar .lower() agresivo
+
+Bien que no lo estés usando a lo loco, pero ojo:
+
+❌ Mal para artistas:
+
+きただにひろし → pierde intención si se mezcla
+
+
+✅ Mejor:
+
+Lowercase solo para comparación interna
+
+Mantener texto original para output
+
+3️⃣ Mejoras específicas en format.py
+🎯 1. Formato declarativo (no lógica dispersa)
+
+Ahora tienes decisiones repartidas tipo:
+
+si explicit
+
+si feat corto
+
+si largo
+
+Mejor patrón:
+
+FORMAT_RULES = {
+    "short": "...",
+    "long": "...",
+    "explicit": "...",
+}
+
+
+Y una función:
+
+def format_track(meta, style="short"):
+    ...
+
+
+Esto te permitirá:
+
+Cambiar formato sin tocar lógica
+
+Añadir presets (Spotify / Radio / Archivo)
+
+🎯 2. No mezclar lógica booleana con strings
+
+Ejemplo típico a evitar:
+
+if explicit:
+    text += " (explicit)"
+
+
+Mejor:
+
+suffixes = []
+if explicit:
+    suffixes.append("(explicit)")
+
+
+Y al final:
+
+return f"{base} {' '.join(suffixes)}"
+
+
+Más limpio, más extensible.
+
+🎯 3. Evitar hardcodear idioma
+
+Si detectas cosas como:
+
+"(feat "
+
+
+Mejor:
+
+Que venga ya normalizado desde strings.py
+
+O usar etiquetas semánticas:
+
+meta.features = ["Artist A", "Artist B"]
+
+
+Y luego decidir cómo se imprimen, no qué significan.
+
+4️⃣ Mejora estructural RECOMENDADA (nivel pro)
+
+Si este proyecto va a crecer:
+
+textutils/
+├── normalize.py   # strings.py
+├── format.py
+├── detect.py      # idioma, escritura, unicode raro
+└── constants.py   # regex, listas, patrones
+
+
+Esto evita que strings.py se vuelva un monstruo.
