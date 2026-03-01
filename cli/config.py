@@ -1,6 +1,6 @@
 from logging import getLogger
 from pathlib import Path
-from pydantic import BaseModel, field_validator, Field
+from pydantic import BaseModel, validator, Field
 from tomllib import loads as parse_toml
 from typing import Literal
 
@@ -62,7 +62,7 @@ class Config(BaseModel):
             if self.scan_path == DEFAULT_DOWNLOAD_PATH and self.download_path != DEFAULT_DOWNLOAD_PATH:
                 self.scan_path = self.download_path
 
-        @field_validator("download_path", "scan_path", mode="before")
+        @validator("download_path", "scan_path", pre=True, always=True)
         def str_to_path(cls, v):
             # convert to absolute, expand ~, normalize
             return Path(v).expanduser().resolve() if isinstance(v, str) else v
@@ -110,7 +110,7 @@ def load_config_file(config_file: Path) -> Config:
         return Config()
 
     toml_dict = parse_toml(config_file.read_text())
-    config = Config.model_validate(toml_dict, strict=True)
+    config = Config.parse_obj(toml_dict)
 
     log.debug("loaded config from file")
 
