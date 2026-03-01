@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+from __future__ import annotations
+>>>>>>> 51f206d9cee155d16ba05c48767a0da1772ff3c1
 from typing import Union
 from tiddl.core.auth.client import AuthClient
 from tiddl.core.auth.models import (
