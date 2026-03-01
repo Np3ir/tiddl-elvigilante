@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-from __future__ import annotations
->>>>>>> 51f206d9cee155d16ba05c48767a0da1772ff3c1
 from logging import getLogger
 from pathlib import Path
 from pydantic import BaseModel, validator, Field
@@ -111,13 +107,6 @@ class Config(BaseModel):
     templates: TemplatesConfig = TemplatesConfig()
 
 
-<<<<<<< HEAD
-=======
-# Fix para Pydantic v1 con forward references (from __future__ import annotations)
-Config.update_forward_refs()
-
-
->>>>>>> 51f206d9cee155d16ba05c48767a0da1772ff3c1
 def load_config_file(config_file: Path) -> Config:
     log.debug(f"loading '{config_file}'")
 
@@ -134,8 +123,4 @@ def load_config_file(config_file: Path) -> Config:
 
 
 CONFIG = load_config_file(APP_PATH / CONFIG_FILENAME)
-<<<<<<< HEAD
 log.debug(f"{CONFIG=}")
-=======
-log.debug(f"{CONFIG=}")
->>>>>>> 51f206d9cee155d16ba05c48767a0da1772ff3c1
