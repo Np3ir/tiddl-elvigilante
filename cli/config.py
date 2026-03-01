@@ -108,6 +108,10 @@ class Config(BaseModel):
     templates: TemplatesConfig = TemplatesConfig()
 
 
+# Fix para Pydantic v1 con forward references (from __future__ import annotations)
+Config.update_forward_refs()
+
+
 def load_config_file(config_file: Path) -> Config:
     log.debug(f"loading '{config_file}'")
 
