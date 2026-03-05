@@ -171,8 +171,8 @@ def add_m4a_metadata(track_path: Path, metadata: Metadata) -> None:
     # Date / Year (extract year only)
     if metadata.date:
         try:
-            # Try to parse date string to get just the year
-            dt = datetime.fromisoformat(metadata.date)
+            # Normalize space→T for Python 3.10 fromisoformat compatibility
+            dt = datetime.fromisoformat(metadata.date.replace(" ", "T"))
             mp4["\xa9day"] = str(dt.year)
         except Exception:
             # Fallback: try to grab first 4 chars if they look like a year
