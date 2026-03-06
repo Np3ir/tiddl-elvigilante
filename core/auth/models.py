@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 class AuthResponse(BaseModel):
@@ -24,6 +24,12 @@ class AuthResponse(BaseModel):
         created: int
         updated: int
         facebookUid: int
+
+        @validator("birthday", "created", "updated", pre=True)
+        def coerce_to_int(cls, v):
+            if v is None:
+                return v
+            return int(float(v))
         appleUid: Optional[str]
         googleUid: Optional[str]
         accountLinkCreated: bool

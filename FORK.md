@@ -261,6 +261,10 @@ See [LICENSE](LICENSE) file for details.
 
 ## 📝 Version History
 
+- **v1.0.1** (March 2026) - Bug fix release
+  - Fixed video downloads crashing with `TypeError: cannot unpack non-iterable NoneType object`
+  - Fixed token refresh failing with `type_error.integer` on `birthday`/`created`/`updated` fields
+
 - **v1.0.0** (March 2026) - Initial production release
   - Python 3.10+ support
   - Pydantic v1 compatibility

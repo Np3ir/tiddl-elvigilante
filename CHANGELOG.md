@@ -15,6 +15,22 @@ See [FORK.md](FORK.md) for detailed information about improvements and differenc
 
 ---
 
+## [1.0.1] - 2026-03-05 (Bug Fix Release)
+
+### 🐛 Fixed
+
+#### Video Download — `TypeError: cannot unpack non-iterable NoneType object`
+- **File**: `cli/commands/download/downloader.py`
+- **Root cause**: The `download()` method's video branch (`elif isinstance(item, Video)`) was truncated — it started the download task but had no `_download_with_retry()` call, no `return` statement, and therefore implicitly returned `None`, crashing the tuple unpacking in `handle_item`.
+- **Fix**: Completed the video download loop body to mirror the track branch: creates `DownloadTask`, calls `_download_with_retry()`, handles per-quality failure with `continue`, converts `.ts` → `.mp4` via `convert_to_mp4()`, and returns `(download_path, True)` on success or `(None, False)` when all qualities fail.
+
+#### Token Refresh — `Failed to refresh token: 3 validation errors for AuthResponse`
+- **File**: `core/auth/models.py`
+- **Root cause**: Tidal's API started returning `birthday`, `created`, and `updated` fields as non-integer values (floats or strings). Pydantic v1 raised `type_error.integer` because the model declared them as `int` / `Optional[int]` with strict validation.
+- **Fix**: Added a `@validator("birthday", "created", "updated", pre=True)` to `AuthResponse.User` that coerces any incoming value to `int` via `int(float(v))`, accepting integers, floats, and numeric strings transparently.
+
+---
+
 ## [1.0.0] - 2026-03-01 (Production Release)
 
 ### 🎉 Initial Production Release

@@ -998,4 +998,48 @@ class Downloader:
                         download_path = Path(_prepare_long_path(str(download_path.absolute())))
 
                     task_id = self.rich_output.download_start(f"[{vibrant_color}]{display_title} {quality}")
-                    
+
+                    download_path.parent.mkdir(exist_ok=True, parents=True)
+
+                    task = DownloadTask(
+                        url=urls[0] if urls else "",
+                        output_path=download_path,
+                        track_id=item.id,
+                        track_title=display_title,
+                        max_attempts=MAX_RETRIES
+                    )
+
+                    download_success = await self._download_with_retry(
+                        task=task,
+                        urls=urls,
+                        task_id=task_id,
+                    )
+                    if not download_success:
+                        task = self.rich_output.download_finish(task_id=task_id)
+                        self.rich_output.show_item_result(
+                            result_message="[yellow]Failed (Retrying lower quality)",
+                            item_description=task.description,
+                            item_path=None,
+                        )
+                        continue
+
+                    try:
+                        download_path = convert_to_mp4(download_path)
+                    except Exception as exc:
+                        log.error(f"Video conversion failed: {exc}")
+                        self.rich_output.console.print(
+                            f"[red]Error converting video:[/] {display_title} - {exc}"
+                        )
+
+                    task = self.rich_output.download_finish(task_id=task_id)
+                    self.rich_output.show_item_result(
+                        result_message=result_message,
+                        item_description=task.description,
+                        item_path=download_path,
+                    )
+                    return download_path, True
+
+                self.rich_output.console.print(
+                    f"[red]Error[/] Could not download '{display_title}' in any quality"
+                )
+                return None, False
