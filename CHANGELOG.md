@@ -15,6 +15,14 @@ See [FORK.md](FORK.md) for detailed information about improvements and differenc
 
 ---
 
+## [1.1.0] - 2026-03-04
+
+### ✨ Added
+
+- **`artist_separator` config option** (`[metadata]` section): Choose between `", "` (default) and `"; "` as the separator between artist names in file tags and file/folder names.
+
+---
+
 ## [1.0.1] - 2026-03-05 (Bug Fix Release)
 
 ### 🐛 Fixed
@@ -30,6 +38,24 @@ See [FORK.md](FORK.md) for detailed information about improvements and differenc
 - **Root cause**: Tidal's API started returning `birthday`, `created`, and `updated` fields as non-integer values (floats or strings). Pydantic v1 raised `type_error.integer` because the model declared them as `int` / `Optional[int]` with strict validation.
 - **Fix**: Added a `@validator("birthday", "created", "updated", pre=True)` to `AuthResponse.User` that coerces any incoming value to `int` via `int(float(v))`, accepting integers, floats, and numeric strings transparently.
 - **Improvement**: The cast is wrapped in `try/except (TypeError, ValueError)` and raises a descriptive `ValueError` for non-numeric values instead of propagating a raw exception.
+
+#### Packaging & Infrastructure
+- **Packaging**: `pyproject.toml` now correctly maps `package-dir = {"tiddl": "."}` and lists all 13 sub-packages; the previous setup caused `pip install` to silently omit sub-packages, breaking imports at runtime.
+- **Entry points**: corrected to `tiddl.cli.app:main` (was `cli.app:main`, broken on install).
+- **Pydantic v1 validators**: replaced `model_post_init` (Pydantic v2 API, silently ignored in v1) with `@root_validator` in `DownloadConfig` and `TemplatesConfig`; this fixes template inheritance from `default` and `scan_path` sync with `download_path`.
+- **Global side-effect**: removed `urllib3.disable_warnings()` from module level in `core/api/api.py`; it was suppressing warnings across the entire Python process.
+
+### ✨ Added
+
+- `py.typed` marker file (PEP 561) enabling downstream type checking.
+- `tests/test_config.py` — 13 unit tests covering `Config`, `DownloadConfig`, and `TemplatesConfig` validators.
+- `.claude/` added to `.gitignore`.
+
+### 📝 Changed
+
+- `pyproject.toml` classifier updated to `5 - Production/Stable`.
+- Repository URLs and maintainer updated to `Np3ir/tiddl-elvigilante`.
+- `Limits` class in `core/api/api.py`: removed inline semicolons.
 
 ---
 
@@ -161,7 +187,7 @@ All original features preserved:
 
 ### 🔗 Links
 
-- **GitHub**: https://github.com/yourusername/tiddl
+- **GitHub**: https://github.com/Np3ir/tiddl-elvigilante
 - **Original**: https://github.com/oskvr37/tiddl
 - **TIDAL**: https://tidal.com
 

@@ -73,12 +73,17 @@ def add_flac_metadata(track_path: Path, metadata: Metadata) -> None:
         picture.type = 3  # front cover
         mutagen.add_picture(picture)
 
-    # Parse date if possible
+    # Parse date if possible (normalize space→T for Python 3.10 fromisoformat compat)
     if metadata.date:
         try:
-            date = datetime.fromisoformat(metadata.date)
+            date = datetime.fromisoformat(metadata.date.replace(" ", "T"))
         except Exception:
-            date = None
+            # Fallback: extract year from first 4 chars if they look like a year
+            date_str = metadata.date.strip()
+            if len(date_str) >= 4 and date_str[:4].isdigit():
+                date = datetime(int(date_str[:4]), 1, 1)
+            else:
+                date = None
     else:
         date = None
 
@@ -166,8 +171,8 @@ def add_m4a_metadata(track_path: Path, metadata: Metadata) -> None:
     # Date / Year (extract year only)
     if metadata.date:
         try:
-            # Try to parse date string to get just the year
-            dt = datetime.fromisoformat(metadata.date)
+            # Normalize space→T for Python 3.10 fromisoformat compatibility
+            dt = datetime.fromisoformat(metadata.date.replace(" ", "T"))
             mp4["\xa9day"] = str(dt.year)
         except Exception:
             # Fallback: try to grab first 4 chars if they look like a year
@@ -220,6 +225,7 @@ def add_track_metadata(
     credits: list[AlbumItemsCredits.ItemWithCredits.CreditsEntry] | None = None,
     comment: str = "",
     genre: str | None = None,
+    artist_separator: str = ", ",
 ) -> None:
     """
     Add FLAC or M4A metadata based on file extension.
@@ -229,12 +235,12 @@ def add_track_metadata(
     """
     # Build full artist string (main + featured etc.)
     artists_sorted = sorted(a.name.strip() for a in track.artists)
-    artists_str = ", ".join(artists_sorted)
+    artists_str = artist_separator.join(artists_sorted)
 
     # Original title + version from Tidal
     raw_title = f"{track.title} ({track.version})" if track.version else track.title
     all_artists = [a.name.strip() for a in track.artists]
-    all_artists_str = ", ".join(all_artists) or artists_str
+    all_artists_str = artist_separator.join(all_artists) or artists_str
     clean_title = clean_track_title(raw_title, all_artists_str)
 
     metadata = Metadata(

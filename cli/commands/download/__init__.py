@@ -333,16 +333,20 @@ def download_callback(
                                 track_metadata.cover_data = b""
 
                         if REWRITE_METADATA or was_downloaded:
+                            effective_date = track_metadata.date or (
+                                str(item.releaseDate) if getattr(item, "releaseDate", None) else ""
+                            )
                             add_track_metadata(
                                 path=download_path,
                                 track=item,
                                 lyrics=lyrics_subtitles,
                                 album_artist=track_metadata.artist,
                                 cover_data=track_metadata.cover_data,
-                                date=track_metadata.date,
+                                date=effective_date,
                                 credits=track_metadata.credits,
                                 comment=track_metadata.album_review,
                                 genre=track_metadata.genre,
+                                artist_separator=CONFIG.metadata.artist_separator,
                             )
 
                     elif isinstance(item, Video):
@@ -411,6 +415,7 @@ def download_callback(
                                     item=album_item.item,
                                     album=album,
                                     quality=get_item_quality(album_item.item),
+                                    artist_separator=CONFIG.metadata.artist_separator,
                                 ),
                                 track_metadata=Metadata(
                                     cover_data=cover.data if cover else b"",
@@ -443,6 +448,7 @@ def download_callback(
                         CONFIG.m3u.templates.album,
                         album=album,
                         type="album",
+                        artist_separator=CONFIG.metadata.artist_separator,
                     ),
                     tracks_with_path=tracks_with_path,
                 )
@@ -451,7 +457,8 @@ def download_callback(
                     cover.save_to_directory(
                         path=DOWNLOAD_PATH
                         / format_template(
-                            template=CONFIG.cover.templates.album, album=album
+                            template=CONFIG.cover.templates.album, album=album,
+                            artist_separator=CONFIG.metadata.artist_separator,
                         )
                     )
 
@@ -474,6 +481,7 @@ def download_callback(
                         item=track,
                         album=album,
                         quality=get_item_quality(track),
+                        artist_separator=CONFIG.metadata.artist_separator,
                     ),
                     track_metadata=Metadata(
                         date=str(album.releaseDate) if album.releaseDate else "",
@@ -492,7 +500,8 @@ def download_callback(
                     ).save_to_directory(
                         path=DOWNLOAD_PATH
                         / format_template(
-                            CONFIG.cover.templates.track, item=track, album=album
+                            CONFIG.cover.templates.track, item=track, album=album,
+                            artist_separator=CONFIG.metadata.artist_separator,
                         )
                     )
 
@@ -517,6 +526,7 @@ def download_callback(
                         item=video,
                         album=album,
                         quality=get_item_quality(video),
+                        artist_separator=CONFIG.metadata.artist_separator,
                     ),
                 )
 
@@ -543,6 +553,7 @@ def download_callback(
                                     item=mix_item.item,
                                     mix_id=mix_id,
                                     quality=get_item_quality(mix_item.item),
+                                    artist_separator=CONFIG.metadata.artist_separator,
                                 ),
                             ))
                         )
@@ -580,6 +591,7 @@ def download_callback(
                         CONFIG.m3u.templates.mix,
                         mix_id=mix_id,
                         type="mix",
+                        artist_separator=CONFIG.metadata.artist_separator,
                     ),
                     tracks_with_path=tracks_with_path,
                 )
@@ -675,6 +687,7 @@ def download_callback(
                                             template=resolve_template(VIDEO_TEMPLATE, CONFIG.templates.video),
                                             item=video,
                                             quality=get_item_quality(video),
+                                            artist_separator=CONFIG.metadata.artist_separator,
                                         ),
                                     ))
                                 )
@@ -834,6 +847,7 @@ def download_callback(
                                     playlist=playlist,
                                     playlist_index=playlist_index,
                                     quality=get_item_quality(playlist_item.item),
+                                    artist_separator=CONFIG.metadata.artist_separator,
                                 ),
                                 track_metadata=Metadata(),
                             ))
@@ -873,6 +887,7 @@ def download_callback(
                         CONFIG.m3u.templates.playlist,
                         playlist=playlist,
                         type="playlist",
+                        artist_separator=CONFIG.metadata.artist_separator,
                     ),
                     tracks_with_path=tracks_with_path,
                 )
@@ -889,6 +904,7 @@ def download_callback(
                         / format_template(
                             template=CONFIG.cover.templates.playlist,
                             playlist=playlist,
+                            artist_separator=CONFIG.metadata.artist_separator,
                         )
                     )
 
