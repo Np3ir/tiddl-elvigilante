@@ -1,6 +1,6 @@
 from logging import getLogger
 from pathlib import Path
-from pydantic import BaseModel, validator, root_validator, Field
+from pydantic import BaseModel, validator, Field
 from typing import Literal
 
 # Python 3.11+ has tomllib built-in, but 3.10 needs tomli package
@@ -33,7 +33,6 @@ class Config(BaseModel):
         save_lyrics: bool = False
         cover: bool = False
         album_review: bool = False
-        artist_separator: Literal[", ", "; ", " / ", " & "] = " / "
 
     metadata: MetadataConfig = MetadataConfig()
 
@@ -63,15 +62,10 @@ class Config(BaseModel):
         update_mtime: bool = False
         rewrite_metadata: bool = False
 
-        @root_validator
-        def sync_scan_to_download(cls, values):
-            scan_path = values.get("scan_path")
-            download_path = values.get("download_path")
-            if (scan_path == DEFAULT_DOWNLOAD_PATH
-                    and download_path is not None
-                    and download_path != DEFAULT_DOWNLOAD_PATH):
-                values["scan_path"] = download_path
-            return values
+        def model_post_init(self, __context):
+            # set scan path to download path when download path is non default
+            if self.scan_path == DEFAULT_DOWNLOAD_PATH and self.download_path != DEFAULT_DOWNLOAD_PATH:
+                self.scan_path = self.download_path
 
         @validator("download_path", "scan_path", pre=True, always=True)
         def str_to_path(cls, v):
@@ -102,14 +96,13 @@ class Config(BaseModel):
         playlist: str = ""
         mix: str = ""
 
-        @root_validator
-        def fill_empty_templates(cls, values):
-            default = values.get("default", "")
-            assert default != "", "Default template cannot be empty."
+        def model_post_init(self, __context):
+            assert self.default != "", "Default template cannot be empty."
+
+            # override templates to default
             for field in ["track", "video", "album", "playlist", "mix"]:
-                if not values.get(field):
-                    values[field] = default
-            return values
+                if getattr(self, field) == "":
+                    setattr(self, field, self.default)
 
     templates: TemplatesConfig = TemplatesConfig()
 
