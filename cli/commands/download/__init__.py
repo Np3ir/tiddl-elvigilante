@@ -445,6 +445,7 @@ def download_callback(
                         CONFIG.m3u.templates.album,
                         album=album,
                         type="album",
+                        artist_separator=CONFIG.templates.artist_separator,
                     ),
                     tracks_with_path=tracks_with_path,
                 )
@@ -453,7 +454,8 @@ def download_callback(
                     cover.save_to_directory(
                         path=DOWNLOAD_PATH
                         / format_template(
-                            template=CONFIG.cover.templates.album, album=album
+                            template=CONFIG.cover.templates.album, album=album,
+                            artist_separator=CONFIG.templates.artist_separator,
                         )
                     )
 
@@ -495,7 +497,8 @@ def download_callback(
                     ).save_to_directory(
                         path=DOWNLOAD_PATH
                         / format_template(
-                            CONFIG.cover.templates.track, item=track, album=album
+                            CONFIG.cover.templates.track, item=track, album=album,
+                            artist_separator=CONFIG.templates.artist_separator,
                         )
                     )
 
@@ -585,6 +588,7 @@ def download_callback(
                         CONFIG.m3u.templates.mix,
                         mix_id=mix_id,
                         type="mix",
+                        artist_separator=CONFIG.templates.artist_separator,
                     ),
                     tracks_with_path=tracks_with_path,
                 )
@@ -880,6 +884,7 @@ def download_callback(
                         CONFIG.m3u.templates.playlist,
                         playlist=playlist,
                         type="playlist",
+                        artist_separator=CONFIG.templates.artist_separator,
                     ),
                     tracks_with_path=tracks_with_path,
                 )
@@ -896,6 +901,7 @@ def download_callback(
                         / format_template(
                             template=CONFIG.cover.templates.playlist,
                             playlist=playlist,
+                            artist_separator=CONFIG.templates.artist_separator,
                         )
                     )
 

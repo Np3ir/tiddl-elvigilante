@@ -245,13 +245,13 @@ def generate_template_data(item=None, album=None, playlist=None, playlist_index=
     safe_folder_len = 150
 
     item_tmpl = None
-    
+
     if item:
         # Handle dicts where artists might be a list of dicts or objects
         artists_raw = safe_getattr(item, "artists") or []
         m_arts = []
         f_arts = []
-        
+
         # Helper to get name from artist object/dict
         def get_name(a): return safe_getattr(a, "name") if not isinstance(a, dict) else a.get("name")
         def get_type(a): return safe_getattr(a, "type") if not isinstance(a, dict) else a.get("type")
@@ -266,9 +266,9 @@ def generate_template_data(item=None, album=None, playlist=None, playlist_index=
 
         m_arts = sorted(m_arts)
         f_arts = sorted(f_arts)
-        
+
         ver = safe_getattr(item, "version", "") or ""
-        
+
         is_dolby = False
         # Here we use Track and it will work even if it's the dummy version if import failed
         if isinstance(item, (Track, dict)):
@@ -328,7 +328,7 @@ def generate_template_data(item=None, album=None, playlist=None, playlist_index=
         album_artist_obj = safe_getattr(album, "artist", None)
         # Handle dict vs object for artist
         album_artist_name = (safe_getattr(album_artist_obj, "name") if not isinstance(album_artist_obj, dict) else album_artist_obj.get("name")) if album_artist_obj else ""
-        
+
         alb_artists = safe_getattr(album, "artists", []) or []
         alb_main_artists = []
         for a in alb_artists:

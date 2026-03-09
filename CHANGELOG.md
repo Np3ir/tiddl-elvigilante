@@ -15,20 +15,26 @@ See [FORK.md](FORK.md) for detailed information about improvements and differenc
 
 ---
 
-## [1.0.1] - 2026-03-09
+## [1.1.0] - 2026-03-09
 
 ### ✨ Added
 
 #### Configurable Artist Separator
-- New `[templates]` config option: `artist_separator` (default: `" / "`)
-- Controls how multiple artists are joined in:
-  - File path template placeholders: `{item.artists}`, `{item.features}`, `{item.artists_with_features}`, `{album.artists}`
-  - Embedded metadata tags: ARTIST (FLAC), ©ART (M4A), artist (MP4 video)
-- Supported values: `" / "`, `", "`, `" & "`, `"; "`, or any custom string
+- New `artist_separator` option in `[templates]` config section (default: `" / "`)
+- Controls how multiple artist names are joined in file paths and metadata tags
+- Supports: `" / "` (default), `", "`, `" & "`, `"; "`, or any custom string
+- Affects template placeholders: `{item.artists}`, `{item.features}`, `{item.artists_with_features}`, `{album.artists}`
+- Affects embedded metadata: FLAC (ARTIST tag), M4A (©ART tag), MP4 (artist tag)
 
 ### 🐛 Fixed
 
-- **Video metadata inconsistency**: `add_video_metadata()` was using `";"` (semicolon, no space) as artist separator while tracks used `", "`. Both now use the configured `artist_separator`.
+#### Video Metadata Separator Inconsistency
+- Fixed video metadata using `";"` (no space) while tracks used `", "` — now both use the configurable `artist_separator`
+
+### 📝 Documentation
+- Updated CONFIG.md, COMPLETE_COMMAND_REFERENCE.md, USAGE.md, QUICK_INDEX.md with `artist_separator` documentation
+- Added config.example.toml entry with all separator options
+- Added tests/test_artist_separator.py (11 test cases)
 
 ---
 
