@@ -11,6 +11,7 @@ import importlib.util
 import types
 
 _WORKTREE = Path(__file__).parent
+_TIDDL = _WORKTREE / "tiddl"
 
 
 def _install_worktree_as_tiddl() -> None:
@@ -20,11 +21,11 @@ def _install_worktree_as_tiddl() -> None:
     for key in stale:
         del sys.modules[key]
 
-    # Create 'tiddl' namespace package pointing to the worktree
+    # Create 'tiddl' namespace package pointing to tiddl/ subdir
     spec = importlib.util.spec_from_file_location(
         "tiddl",
-        str(_WORKTREE / "__init__.py"),
-        submodule_search_locations=[str(_WORKTREE)],
+        str(_TIDDL / "__init__.py"),
+        submodule_search_locations=[str(_TIDDL)],
     )
     module = importlib.util.module_from_spec(spec)
     sys.modules["tiddl"] = module
