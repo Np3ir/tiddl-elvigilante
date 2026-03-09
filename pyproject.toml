@@ -72,11 +72,12 @@ Changelog = "https://github.com/yourusername/tiddl-elvigilante/blob/main/CHANGEL
 "About Fork" = "https://github.com/yourusername/tiddl-elvigilante/blob/main/FORK.md"
 
 [project.scripts]
-tiddl-elvigilante = "cli.app:main"
-tiddl = "cli.app:main"
+tiddl-elvigilante = "tiddl.cli.app:main"
+tiddl = "tiddl.cli.app:main"
 
-[tool.setuptools]
-packages = ["cli", "core"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tiddl*"]
 
 [tool.setuptools.package-data]
 tiddl = ["py.typed"]

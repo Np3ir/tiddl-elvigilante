@@ -20,9 +20,9 @@ See [FORK.md](FORK.md) for detailed information about improvements and differenc
 ### ✨ Added
 
 #### Configurable Artist Separator
-- New `artist_separator` option in `[templates]` config section
+- New `artist_separator` option in `[templates]` config section (default: `" / "`)
 - Controls how multiple artist names are joined in file paths and metadata tags
-- Supports: `", "` (default), `"; "`, `" / "`, `" & "`, or any custom string
+- Supports: `" / "` (default), `", "`, `" & "`, `"; "`, or any custom string
 - Affects template placeholders: `{item.artists}`, `{item.features}`, `{item.artists_with_features}`, `{album.artists}`
 - Affects embedded metadata: FLAC (ARTIST tag), M4A (©ART tag), MP4 (artist tag)
 
@@ -34,6 +34,7 @@ See [FORK.md](FORK.md) for detailed information about improvements and differenc
 ### 📝 Documentation
 - Updated CONFIG.md, COMPLETE_COMMAND_REFERENCE.md, USAGE.md, QUICK_INDEX.md with `artist_separator` documentation
 - Added config.example.toml entry with all separator options
+- Added tests/test_artist_separator.py (11 test cases)
 
 ---
 

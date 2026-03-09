@@ -41,6 +41,7 @@ cover = true
 
 [templates]
 default = "{album.artist}/{album.title}/{item.number}. {item.title}"
+artist_separator = " / "
 ```
 
 ---
@@ -187,15 +188,16 @@ Controls file naming and organization.
 
 ### `artist_separator`
 - **Type**: string
-- **Default**: `", "`
-- Separator used between artist names in template placeholders (`{item.artists}`, `{item.features}`, `{item.artists_with_features}`) and in file metadata tags
-- **Options**: `", "` / `"; "` / `" / "` / `" & "`
+- **Default**: `" / "`
+- Separator used between artist names in template placeholders and embedded metadata tags
+- **Options**: `" / "` / `", "` / `"; "` / `" & "` or any custom string
 - **Example**:
   ```toml
   [templates]
   artist_separator = " / "
   ```
-  With `artist_separator = " / "`, a track by Artist1 and Artist2 would render `{item.artists}` as `Artist1 / Artist2`
+  With `artist_separator = " / "`, a track by Artist1 and Artist2 renders `{item.artists}` as `Artist1 / Artist2`
+- Affects: `{item.artists}`, `{item.features}`, `{item.artists_with_features}`, `{album.artists}`, and the ARTIST/©ART metadata tag in FLAC/M4A/MP4 files
 
 ---
 
@@ -304,7 +306,7 @@ video = ""
 album = ""
 playlist = ""
 default = "{album.artist}/{album.title}/{item.number}. {item.title}"
-artist_separator = ", " # ", " / "; " / " / " / " & "
+artist_separator = " / "  # " / ", ", ", " & ", "; "
 
 [m3u]
 save = false
