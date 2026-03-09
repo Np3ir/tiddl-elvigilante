@@ -238,20 +238,22 @@ def parse_date_safe(date_str: Any) -> datetime:
         return datetime.min
 
 
-def generate_template_data(item=None, album=None, playlist=None, playlist_index=0, quality="") -> dict:
+def generate_template_data(item=None, album=None, playlist=None, playlist_index=0, quality="", artist_separator=", ") -> dict:
     # Helper to calc safe limits (defined at scope level to be available for all blocks)
     # sanitize_filename now accepts reserve_bytes, so we pass explicit limits here.
     safe_file_len = MAX_COMPONENT_LEN
     safe_folder_len = 150
 
+    sep = artist_separator
+
     item_tmpl = None
-    
+
     if item:
         # Handle dicts where artists might be a list of dicts or objects
         artists_raw = safe_getattr(item, "artists") or []
         m_arts = []
         f_arts = []
-        
+
         # Helper to get name from artist object/dict
         def get_name(a): return safe_getattr(a, "name") if not isinstance(a, dict) else a.get("name")
         def get_type(a): return safe_getattr(a, "type") if not isinstance(a, dict) else a.get("type")
@@ -266,9 +268,9 @@ def generate_template_data(item=None, album=None, playlist=None, playlist_index=
 
         m_arts = sorted(m_arts)
         f_arts = sorted(f_arts)
-        
+
         ver = safe_getattr(item, "version", "") or ""
-        
+
         is_dolby = False
         # Here we use Track and it will work even if it's the dummy version if import failed
         if isinstance(item, (Track, dict)):
@@ -277,15 +279,17 @@ def generate_template_data(item=None, album=None, playlist=None, playlist_index=
             is_dolby = "DOLBY_ATMOS" in tags
 
         all_names_list = m_arts + f_arts
-        all_names = ", ".join(all_names_list) if all_names_list else ", ".join(m_arts)
+        all_names = sep.join(all_names_list) if all_names_list else sep.join(m_arts)
+        # clean_track_title splits on "," internally, so always pass comma-separated
+        all_names_csv = ", ".join(all_names_list) if all_names_list else ", ".join(m_arts)
         item_title = safe_getattr(item, "title", "")
-        clean_title = clean_track_title(item_title, all_names)
+        clean_title = clean_track_title(item_title, all_names_csv)
 
         t_trunc = _truncate(clean_title, MAX_TITLE_LEN)
         ver_str = f" ({ver})" if ver else ""
         tv_trunc = _truncate(f"{t_trunc}{ver_str}", MAX_TITLE_LEN)
-        af_trunc = _truncate(", ".join(m_arts + f_arts), MAX_ARTISTS_LEN)
-        
+        af_trunc = _truncate(sep.join(m_arts + f_arts), MAX_ARTISTS_LEN)
+
         item_artist_obj = safe_getattr(item, "artist", None)
         art_name = get_name(item_artist_obj) if item_artist_obj else (m_arts[0] if m_arts else "")
 
@@ -303,9 +307,9 @@ def generate_template_data(item=None, album=None, playlist=None, playlist_index=
             quality=quality,
             artist=art_name,
             safe_artist=sanitize_filename(art_name, safe_getattr(item, "id", 0), max_len=safe_folder_len),
-            artists=", ".join(m_arts),
-            safe_artists=sanitize_filename(", ".join(m_arts), safe_getattr(item, "id", 0), max_len=safe_folder_len),
-            features=", ".join(f_arts),
+            artists=sep.join(m_arts),
+            safe_artists=sanitize_filename(sep.join(m_arts), safe_getattr(item, "id", 0), max_len=safe_folder_len),
+            features=sep.join(f_arts),
             artists_with_features=af_trunc,
             explicit=Explicit(safe_getattr(item, "explicit", None)),
             genre=safe_getattr(safe_getattr(item, "album"), "genre", "") or "",
@@ -327,7 +331,7 @@ def generate_template_data(item=None, album=None, playlist=None, playlist_index=
         album_artist_obj = safe_getattr(album, "artist", None)
         # Handle dict vs object for artist
         album_artist_name = (safe_getattr(album_artist_obj, "name") if not isinstance(album_artist_obj, dict) else album_artist_obj.get("name")) if album_artist_obj else ""
-        
+
         alb_artists = safe_getattr(album, "artists", []) or []
         alb_main_artists = []
         for a in alb_artists:
@@ -342,8 +346,8 @@ def generate_template_data(item=None, album=None, playlist=None, playlist_index=
             safe_title=sanitize_filename(clean_album_title, safe_getattr(album, "id", 0), max_len=safe_folder_len),
             artist=album_artist_name,
             safe_artist=sanitize_filename(album_artist_name, safe_getattr(album, "id", 0), max_len=safe_folder_len),
-            artists=", ".join(alb_main_artists),
-            safe_artists=sanitize_filename(", ".join(alb_main_artists), safe_getattr(album, "id", 0), max_len=safe_folder_len),
+            artists=sep.join(alb_main_artists),
+            safe_artists=sanitize_filename(sep.join(alb_main_artists), safe_getattr(album, "id", 0), max_len=safe_folder_len),
             date=d,
             explicit=Explicit(safe_getattr(album, "explicit", None)),
             master=UserFormat(is_master),
@@ -475,17 +479,18 @@ def _prepare_long_path(path: str) -> str:
 
     return path
 
-def format_template(template: str, 
-                    item: Optional[Union[Track, Video, Dict]] = None, 
-                    album: Optional[Union[Album, Dict]] = None, 
-                    playlist: Optional[Union[Playlist, Dict]] = None, 
-                    playlist_index: int = 0, 
-                    quality: str = "", 
-                    with_asterisk_ext: bool = True, 
+def format_template(template: str,
+                    item: Optional[Union[Track, Video, Dict]] = None,
+                    album: Optional[Union[Album, Dict]] = None,
+                    playlist: Optional[Union[Playlist, Dict]] = None,
+                    playlist_index: int = 0,
+                    quality: str = "",
+                    with_asterisk_ext: bool = True,
+                    artist_separator: str = ", ",
                     **extra) -> str:
-    
+
     template = template.strip().lstrip('\ufeff').replace("\\", "/")
-    base_data = generate_template_data(item, album, playlist, playlist_index, quality)
+    base_data = generate_template_data(item, album, playlist, playlist_index, quality, artist_separator=artist_separator)
     
     aliases = {}
     if item and base_data.get("item"):

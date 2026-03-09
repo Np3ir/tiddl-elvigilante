@@ -100,6 +100,21 @@ tiddl download url --template "{album.artist}/{album.title}/{item.title}" https:
 tiddl download url --template "{album.artist}/({album.date:%Y}) {album.title}/{item.number}. {item.title}" https://...
 ```
 
+### Artist Separator
+
+Control how multiple artists are separated in filenames and metadata:
+
+```toml
+# In config.toml
+[templates]
+artist_separator = " / "   # "Drake / 21 Savage / Metro Boomin"
+# artist_separator = ", "   # "Drake, 21 Savage, Metro Boomin" (default)
+# artist_separator = "; "   # "Drake; 21 Savage; Metro Boomin"
+# artist_separator = " & "  # "Drake & 21 Savage & Metro Boomin"
+```
+
+Affects placeholders: `{item.artists}`, `{item.features}`, `{item.artists_with_features}`, `{album.artists}`, and embedded metadata tags (FLAC/M4A/MP4).
+
 **See [COMPLETE_COMMAND_REFERENCE.md](COMPLETE_COMMAND_REFERENCE.md) for complete placeholder reference.**
 
 ---

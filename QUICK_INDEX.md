@@ -98,6 +98,16 @@ tiddl download url https://tidal.com/mix/mixed123xyz      ✓
 {quality}                      → "max", "high"...
 ```
 
+#### **Artist Separator**
+```toml
+[templates]
+artist_separator = ", "    # Default: "Artist1, Artist2"
+# artist_separator = "; "  # "Artist1; Artist2"
+# artist_separator = " / " # "Artist1 / Artist2"
+# artist_separator = " & " # "Artist1 & Artist2"
+```
+Affects `{item.artists}`, `{item.features}`, `{item.artists_with_features}`, `{album.artists}` and metadata tags.
+
 ---
 
 ### 5️⃣ DATE FORMATS (13 Variants)
@@ -147,9 +157,11 @@ tiddl download url https://tidal.com/mix/mixed123xyz      ✓
 {album.artist}/{item.title}
 → The Beatles/Come Together.flac
 
-# Example 8: All artists
+# Example 8: All artists (uses artist_separator from config)
 {album.artists}/{album.title}/{item.number}. {item.title}
 → The Beatles, Yoko Ono/Abbey Road/01. Come Together.flac
+# With artist_separator = " / ":
+→ The Beatles / Yoko Ono/Abbey Road/01. Come Together.flac
 ```
 
 ---

@@ -185,6 +185,18 @@ Controls file naming and organization.
 - **Type**: string
 - Specific template for videos
 
+### `artist_separator`
+- **Type**: string
+- **Default**: `", "`
+- Separator used between artist names in template placeholders (`{item.artists}`, `{item.features}`, `{item.artists_with_features}`) and in file metadata tags
+- **Options**: `", "` / `"; "` / `" / "` / `" & "`
+- **Example**:
+  ```toml
+  [templates]
+  artist_separator = " / "
+  ```
+  With `artist_separator = " / "`, a track by Artist1 and Artist2 would render `{item.artists}` as `Artist1 / Artist2`
+
 ---
 
 ## 📝 Template Variables
@@ -292,6 +304,7 @@ video = ""
 album = ""
 playlist = ""
 default = "{album.artist}/{album.title}/{item.number}. {item.title}"
+artist_separator = ", " # ", " / "; " / " / " / " & "
 
 [m3u]
 save = false

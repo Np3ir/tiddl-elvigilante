@@ -265,16 +265,17 @@ tiddl --omit-cache <command>
 
 {item.safe_artist}             # Artist with safe characters
 
-{item.artists}                 # All artists
+{item.artists}                 # All artists (separated by artist_separator)
                                # Example: "Artist1, Artist2"
+                               # With artist_separator = " / ": "Artist1 / Artist2"
 
 {item.safe_artists}            # Artists with safe characters
 
-{item.features}                # Only featured artists
+{item.features}                # Only featured artists (separated by artist_separator)
                                # Example: "Artist3, Artist4"
 
-{item.artists_with_features}   # Artists + featured
-                               # Example: "Artist1 feat. Artist2"
+{item.artists_with_features}   # Artists + featured (separated by artist_separator)
+                               # Example: "Artist1, Artist2"
 
 {item.explicit}                # Explicit indicator
                                # Example: "[E]" if explicit
@@ -319,7 +320,7 @@ tiddl --omit-cache <command>
 
 {album.safe_artist}            # Artist with safe characters
 
-{album.artists}                # All album artists
+{album.artists}                # All album artists (separated by artist_separator)
 
 {album.safe_artists}           # Artists with safe characters
 
@@ -408,6 +409,29 @@ Dates can be formatted many ways:
 
 # Custom - combine as needed
 {item.releaseDate:%A, %B %d, %Y}   # Sunday, January 15, 2023
+```
+
+---
+
+## Artist Separator
+
+Controls how multiple artist names are joined in placeholders like `{item.artists}`, `{item.features}`, and `{item.artists_with_features}`, as well as in embedded metadata tags.
+
+```toml
+[templates]
+artist_separator = ", "   # Default: comma + space
+# Other options:
+# artist_separator = "; "   # Semicolon
+# artist_separator = " / "  # Slash
+# artist_separator = " & "  # Ampersand
+```
+
+**Examples with different separators:**
+```bash
+# artist_separator = ", "  →  "Drake, 21 Savage, Metro Boomin"
+# artist_separator = "; "  →  "Drake; 21 Savage; Metro Boomin"
+# artist_separator = " / " →  "Drake / 21 Savage / Metro Boomin"
+# artist_separator = " & " →  "Drake & 21 Savage & Metro Boomin"
 ```
 
 ---
