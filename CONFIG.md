@@ -30,7 +30,7 @@ debug = false
 track_quality = "max"
 video_quality = "fhd"
 skip_existing = true
-threads_count = 2
+threads_count = 4
 requests_per_minute = 50
 download_path = "~/Music/tiddl"
 
@@ -87,9 +87,9 @@ artist_separator = " / "
 
 ### `threads_count`
 - **Type**: integer
-- **Default**: 2
+- **Default**: 4
 - **Range**: 1-20
-- Number of concurrent downloads
+- Number of concurrent downloads. Higher values increase speed but may be more detectable. Values of 2–6 are recommended.
 
 ### `requests_per_minute`
 - **Type**: integer
@@ -298,7 +298,7 @@ debug = false
 track_quality = "max"
 video_quality = "fhd"
 skip_existing = true
-threads_count = 2
+threads_count = 4
 requests_per_minute = 50
 download_path = "~/Music/tiddl"
 scan_path = "~/Music/tiddl"

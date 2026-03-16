@@ -15,6 +15,19 @@ See [FORK.md](FORK.md) for detailed information about improvements and differenc
 
 ---
 
+## [1.1.3] - 2026-03-15
+
+### ⚡ Performance
+
+- **`threads_count` default raised 2 → 4** — Doubles concurrent download throughput out
+  of the box. Albums and playlists now download ~2× faster with no configuration changes
+  required. Range 2–6 recommended; higher values are faster but more detectable.
+- **`requests_per_minute` documented in `config.example.toml`** — Now visible with
+  `50=safe / 80=fast / 120=aggressive` guidance so users can tune API rate without
+  reading source code.
+
+---
+
 ## [1.1.2] - 2026-03-15
 
 ### ✨ Added
