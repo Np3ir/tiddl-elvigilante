@@ -25,8 +25,9 @@ playlist = ""
 track_quality = "high" # "low", "high", "lossless", "hires"
 video_quality = "fhd"  # "audio", "360", "480", "720", "1080", "fhd"
 skip_existing = true
-threads_count = 2
-# download_path = "~/Music/tiddl" 
+threads_count = 4            # Concurrent downloads (2-6 recommended, higher = faster but more detectable)
+requests_per_minute = 50     # API rate limit (50=safe, 80=fast, 120=aggressive)
+# download_path = "~/Music/tiddl"
 # scan_path = "~/Music/tiddl"
 singles_filter = "none" # "none", "only", "include"
 videos_filter = "none"  # "none", "only", "allow"
