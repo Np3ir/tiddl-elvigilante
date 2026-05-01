@@ -829,6 +829,7 @@ def download_callback(
                     log.warning(f"Could not get artist info: {e}")
 
                 collected_albums = []
+                video_tasks: list = []   # asyncio.Task objects for videos
 
                 def collect_albums(singles: bool):
                     offset = 0
@@ -880,7 +881,7 @@ def download_callback(
 
                             for video in artist_videos.items:
                                 artist_stats['total_videos'] += 1
-                                futures.append(
+                                video_tasks.append(
                                     asyncio.create_task(handle_item(
                                         item=video,
                                         file_path=format_template(
@@ -991,7 +992,7 @@ def download_callback(
                 ctx.obj.console.print(f"  • [bold]{total_items} total items to download[/]\n")
 
                 # Download everything
-                # When concurrency=1 process sequentially — avoids 250+ pending tasks on Ctrl+C
+                # futures = Album objects only; video_tasks = asyncio.Task objects for videos
                 try:
                     if ARTIST_CONCURRENCY == 1:
                         for album in futures:
@@ -999,6 +1000,10 @@ def download_callback(
                     else:
                         tasks = [asyncio.create_task(download_album_throttled(a)) for a in futures]
                         await asyncio.gather(*tasks)
+
+                    # Videos run concurrently after albums (already created as tasks)
+                    if video_tasks:
+                        await asyncio.gather(*video_tasks, return_exceptions=True)
                     
                     # Fallback: If artist info failed initially, try to get name from downloaded albums
                     if "Artist " in artist_name and collected_albums:
@@ -1019,6 +1024,10 @@ def download_callback(
                             if not t.done():
                                 t.cancel()
                         await asyncio.gather(*tasks, return_exceptions=True)
+                    for t in video_tasks:
+                        if not t.done():
+                            t.cancel()
+                    await asyncio.gather(*video_tasks, return_exceptions=True)
                     raise
                 except Exception as e:
                     ctx.obj.console.print(f"\n[red]❌ Error during artist download:[/] {e}")
